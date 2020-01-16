@@ -738,6 +738,13 @@ public class Config {
     }
 
     private void mergeConfig(Config from, Config to) {
+    	if(from.frameworks != null) {
+			for(int i = 0; i<from.frameworks.size(); i++) {
+				String framework = from.frameworks.get(i);
+				logger.info("--> added " + framework);
+		    }
+        }
+    	
         to.exportedSymbols = mergeLists(from.exportedSymbols, to.exportedSymbols);
         to.unhideSymbols = mergeLists(from.unhideSymbols, to.unhideSymbols);
         to.forceLinkClasses = mergeLists(from.forceLinkClasses, to.forceLinkClasses);
@@ -763,6 +770,7 @@ public class Config {
             for (String dir : dirs) {
                 if (path.contains(dir + "/robovm.xml")) {
                     File configXml = new File(new File(extractIfNeeded(path), dir), "robovm.xml");
+                    logger.info("Merging xml: " + configXml.getAbsolutePath());
                     Builder builder = new Builder();
                     builder.read(configXml);
                     mergeConfig(builder.config, config);
@@ -770,7 +778,9 @@ public class Config {
                 }
             }
         }
-
+        
+        logger.info("Merging main config");
+        
         // Then merge with this Config
         mergeConfig(this, config);
 
